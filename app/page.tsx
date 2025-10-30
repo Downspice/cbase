@@ -83,43 +83,48 @@ export default function LandingPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="fixed top-0 z-50 w-full bg-[#f7f5f0]/80 backdrop-blur-md transition-all duration-300"
       >
-        <div className="mx-auto flex items-center justify-end px-[5%] py-2">
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="flex items-center gap-4"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
+        <div className="flex mx-auto  items-center justify-between  px-[5%] py-2">
+          <div className="bg-linear-to-br from-[#f4d03f] to-[#ffa726] bg-clip-text text-[2rem] font-black leading-none tracking-tighter text-transparent ">
+            TBASE
+          </div>
+          <div className="">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="flex items-center gap-4"
             >
-              Top Up
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
-            >
-              Notifications
-            </motion.button>
-            <Separator className="text-primary" orientation="vertical" />
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
-            >
-              Login
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="rounded-xl bg-[#f4d03f] px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:shadow-[0_10px_30px_rgba(244,208,63,0.3)]"
-            >
-              Sign Up
-            </motion.button>
-          </motion.div>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
+              >
+                Top Up
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
+              >
+                Notifications
+              </motion.button>
+              <Separator className="text-primary" orientation="vertical" />
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
+              >
+                Login
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="rounded-xl bg-[#f4d03f] px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:shadow-[0_10px_30px_rgba(244,208,63,0.3)]"
+              >
+                Sign Up
+              </motion.button>
+            </motion.div>
+          </div>
         </div>
       </motion.header>
 
