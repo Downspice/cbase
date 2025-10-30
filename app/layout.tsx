@@ -3,6 +3,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { Nunito } from "next/font/google";
 import QueryProvider from "@/providers/QueryClient";
+import { Toaster } from "@/components/ui/sonner";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
         className={`${nunito.className} antialiased`}
       >
         <QueryProvider> {children}</QueryProvider>
+        <Toaster richColors />
       </body>
     </html>
   );
