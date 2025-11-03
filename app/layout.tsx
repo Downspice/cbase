@@ -10,7 +10,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "CBASE",
+  title: "TBASE",
   description: "The top tier customer management system",
 };
 

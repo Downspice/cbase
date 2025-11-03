@@ -35,7 +35,7 @@ const data = {
   },
   teams: [
     {
-      name: "CBase",
+      name: "TBASE",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },

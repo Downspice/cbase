@@ -6,8 +6,32 @@ import { Separator } from "@/components/ui/separator";
 import TipFilterForm from "@/components/actualForms/tipFilter";
 import Fieldset, { FieldsetDemo } from "@/components/customUI/fieldset";
 import { SelectField } from "@/components/formFields/SelectField";
-import { GeneralOptions, MatchResultOptions } from "@/lib/optionList";
+import { 
+  GeneralOptions, 
+  MatchResultOptions, 
+  LeagueOptions,
+  GoalsOptions,
+  PositionOptions,
+  BookingsOptions 
+} from "@/lib/optionList";
 import { InputField } from "@/components/formFields/InputField";
+import { useAuth } from "@/hooks/use-auth";
+import { LoginDialog } from "@/components/auth/LoginDialog";
+import { SignupDialog } from "@/components/auth/SignupDialog";
+import { TokenDisplay } from "@/components/auth/TokenDisplay";
+import { TokensView } from "@/components/auth/TokensView";
+import { TopUpView } from "@/components/auth/TopUpView";
+import { NotificationsView } from "@/components/auth/NotificationsView";
+import { GeneratedTipsView } from "@/components/tips/GeneratedTipsView";
+import { TipDetailView } from "@/components/tips/TipDetailView";
+import TipsterReviewView from "@/components/tips/TipsterReviewView";
+import TipsterFixturesView from "@/components/tips/TipsterFixturesView";
+import { useNotifications } from "@/hooks/use-notifications";
+import { useTips } from "@/hooks/use-tips";
+import { authService } from "@/lib/auth";
+import { notificationService } from "@/lib/notifications";
+import { GeneratedTip, TipFilters } from "@/lib/tips";
+import { toast } from "sonner";
 
 export default function LandingPage() {
   const [displayText, setDisplayText] = useState("");
@@ -20,6 +44,52 @@ export default function LandingPage() {
   const typingSpeed = 200;
   const deletingSpeed = 150;
   const pauseDuration = 5000;
+
+  // Authentication
+  const { isAuthenticated, user, logout } = useAuth();
+  const { unreadCount } = useNotifications();
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
+  const [tokensViewOpen, setTokensViewOpen] = useState(false);
+  const [topUpOpen, setTopUpOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [generatedTipsOpen, setGeneratedTipsOpen] = useState(false);
+  const [tipDetailOpen, setTipDetailOpen] = useState(false);
+  const [selectedTip, setSelectedTip] = useState<GeneratedTip | null>(null);
+  const [tipsterViewOpen, setTipsterViewOpen] = useState(false);
+  const [tipsterAutoOpened, setTipsterAutoOpened] = useState(false);
+  const [tipsterSelectedTipId, setTipsterSelectedTipId] = useState<string | null>(null);
+  const [tipsterFixturesOpen, setTipsterFixturesOpen] = useState(false);
+
+  // Auto-open Tipster Workbench once upon tipster login
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "tipster" && !tipsterAutoOpened) {
+      setTipsterViewOpen(true);
+      setTipsterAutoOpened(true);
+    }
+  }, [isAuthenticated, user?.role, tipsterAutoOpened]);
+  
+  // Form state for filters
+  const [generalFilter, setGeneralFilter] = useState("");
+  const [homeResult, setHomeResult] = useState("");
+  const [homeResultCount, setHomeResultCount] = useState<number | undefined>(undefined);
+  const [awayResult, setAwayResult] = useState("");
+  const [awayResultCount, setAwayResultCount] = useState<number | undefined>(undefined);
+  const [homeGoals, setHomeGoals] = useState("");
+  const [homePosition, setHomePosition] = useState("");
+  const [homeBookings, setHomeBookings] = useState("");
+  const [homeCount, setHomeCount] = useState<number | undefined>(undefined);
+  const [awayGoals, setAwayGoals] = useState("");
+  const [awayPosition, setAwayPosition] = useState("");
+  const [awayBookings, setAwayBookings] = useState("");
+  const [awayCount, setAwayCount] = useState<number | undefined>(undefined);
+  const [homeH2HResult, setHomeH2HResult] = useState("");
+  const [homeH2HCount, setHomeH2HCount] = useState<number | undefined>(undefined);
+  const [awayH2HResult, setAwayH2HResult] = useState("");
+  const [awayH2HCount, setAwayH2HCount] = useState<number | undefined>(undefined);
+  const [leagueFilter, setLeagueFilter] = useState("");
+
+  const { generateTip } = useTips();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -94,35 +164,79 @@ export default function LandingPage() {
               transition={{ delay: 0.3, duration: 0.6 }}
               className="flex items-center gap-4"
             >
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
-              >
-                Top Up
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
-              >
-                Notifications
-              </motion.button>
+              {isAuthenticated && (
+                <TokenDisplay onClick={() => setTokensViewOpen(true)} />
+              )}
+              {isAuthenticated && user?.role === "tipster" && (
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setTipsterViewOpen(true)}
+                  className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
+                >
+                  Tipster Workbench
+                </motion.button>
+              )}
+              {isAuthenticated && (
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setNotificationsOpen(true)}
+                  className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb] relative"
+                >
+                  Notifications
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </motion.button>
+              )}
+              {isAuthenticated && (
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setGeneratedTipsOpen(true)}
+                  className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
+                >
+                  Generated Tips
+                </motion.button>
+              )}
               <Separator className="text-primary" orientation="vertical" />
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
-              >
-                Login
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-xl bg-[#f4d03f] px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:shadow-[0_10px_30px_rgba(244,208,63,0.3)]"
-              >
-                Sign Up
-              </motion.button>
+              {isAuthenticated ? (
+                <>
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      logout();
+                      toast.success("Logged out successfully");
+                    }}
+                    className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
+                  >
+                    {user?.name || user?.email} (Logout)
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setLoginOpen(true)}
+                    className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
+                  >
+                    Login
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setSignupOpen(true)}
+                    className="rounded-xl bg-[#f4d03f] px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:shadow-[0_10px_30px_rgba(244,208,63,0.3)]"
+                  >
+                    Sign Up
+                  </motion.button>
+                </>
+              )}
             </motion.div>
           </div>
         </div>
@@ -248,7 +362,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative z-10 flex h-screen items-center justify-center px-[5%]">
         <div className="mx-auto w-full max-w-[1400px] text-center">
-          {/* Large CBASE Logo with Typing Effect */}
+          {/* Large TBASE Logo with Typing Effect */}
           <motion.h1
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -311,6 +425,7 @@ export default function LandingPage() {
                 <motion.button
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => setSignupOpen(true)}
                   className="rounded-[15px] bg-[#f4d03f] px-12 py-5 text-lg font-semibold text-[#3a3947] transition-all duration-300 hover:shadow-[0_10px_30px_rgba(244,208,63,0.3)] sm:w-full sm:px-8 sm:py-4"
                 >
                   Sign Up
@@ -318,6 +433,7 @@ export default function LandingPage() {
                 <motion.button
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => setLoginOpen(true)}
                   className="rounded-[15px] border-2 border-[#4a4856] bg-transparent px-12 py-5 text-lg font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb] sm:w-full sm:px-8 sm:py-4"
                 >
                   Login
@@ -398,111 +514,159 @@ export default function LandingPage() {
               className="col-span-2"
               label="General"
               options={GeneralOptions}
-              value={generalId}
-              onChange={setGeneralId}
+              value={generalFilter}
+              onChange={setGeneralFilter}
               placeholder="Select your country"
             />
             <div className="col-span-1 flex flex-end gap-4">
               <SelectField
                 className=""
-                label="Home"
+                label="Home Result"
                 options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
-                placeholder="Select your result"
+                value={homeResult}
+                onChange={setHomeResult}
+                placeholder="Select result"
               />
-              <InputField label="count" type="number" placeholder="00" />
+              <InputField 
+                label="Count" 
+                type="number" 
+                placeholder="0" 
+                value={homeResultCount?.toString() || ""}
+                onChange={(e) => setHomeResultCount(e.target.value ? parseInt(e.target.value) : undefined)}
+              />
             </div>
             <div className="col-span-1 flex  flex-end gap-4">
               <SelectField
                 className=""
-                label="Away"
+                label="Away Result"
                 options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
-                placeholder="Select your result"
+                value={awayResult}
+                onChange={setAwayResult}
+                placeholder="Select result"
               />
-              <InputField label="count" type="number" placeholder="00" />
+              <InputField 
+                label="Count" 
+                type="number" 
+                placeholder="0" 
+                value={awayResultCount?.toString() || ""}
+                onChange={(e) => setAwayResultCount(e.target.value ? parseInt(e.target.value) : undefined)}
+              />
             </div>
             <div className="col-span-1 flex flex-end gap-4">
               <SelectField
                 className=""
                 label="Home H2H"
                 options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
+                value={homeH2HResult}
+                onChange={setHomeH2HResult}
                 placeholder="Select your result"
               />
-              <InputField label="count" type="number" placeholder="00" />
+              <InputField 
+                label="count" 
+                type="number" 
+                placeholder="00" 
+                value={homeH2HCount?.toString() || ""}
+                onChange={(e) => setHomeH2HCount(e.target.value ? parseInt(e.target.value) : undefined)}
+              />
             </div>
             <div className="col-span-1 flex  flex-end gap-4">
               <SelectField
                 className=""
                 label="Away H2H"
                 options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
+                value={awayH2HResult}
+                onChange={setAwayH2HResult}
                 placeholder="Select your result"
               />
-              <InputField label="count" type="number" placeholder="00" />
+              <InputField 
+                label="count" 
+                type="number" 
+                placeholder="00" 
+                value={awayH2HCount?.toString() || ""}
+                onChange={(e) => setAwayH2HCount(e.target.value ? parseInt(e.target.value) : undefined)}
+              />
             </div>
           </div>
         </Fieldset>
 
         <Fieldset legend="League" variant="gradient">
           <div className="w-full grid grid-cols-1 gap-2 space-x-3 md:grid-cols-2 lg:grid-cols-2  mt-1">
+            <SelectField
+              className="col-span-2"
+              label="League"
+              options={LeagueOptions}
+              value={leagueFilter}
+              onChange={setLeagueFilter}
+              placeholder="Select league"
+            />
+          </div>
+          <div className="w-full grid grid-cols-1 gap-2 space-x-3 md:grid-cols-2 lg:grid-cols-2  mt-1">
             <div className="col-span-1 flex flex-col gap-4">
-              <h2>Home</h2>
+              <h2 className="text-lg font-semibold text-[#3a3947]">Home</h2>
               <SelectField
                 className=""
                 label="Goals"
-                options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
-                placeholder="Select your result"
+                options={GoalsOptions}
+                value={homeGoals}
+                onChange={setHomeGoals}
+                placeholder="Select goals"
               />
               <SelectField
                 className=""
                 label="Position"
-                options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
-                placeholder="Select your result"
+                options={PositionOptions}
+                value={homePosition}
+                onChange={setHomePosition}
+                placeholder="Select position"
               />
               <SelectField
                 className=""
                 label="Bookings"
-                options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
-                placeholder="Select your result"
+                options={BookingsOptions}
+                value={homeBookings}
+                onChange={setHomeBookings}
+                placeholder="Select bookings"
+              />
+              <InputField 
+                label="Count" 
+                type="number" 
+                placeholder="0" 
+                value={homeCount?.toString() || ""}
+                onChange={(e) => setHomeCount(e.target.value ? parseInt(e.target.value) : undefined)}
               />
             </div>
             <div className="col-span-1 flex flex-col gap-4">
-              <h2>Away</h2>
+              <h2 className="text-lg font-semibold text-[#3a3947]">Away</h2>
               <SelectField
                 className=""
                 label="Goals"
-                options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
-                placeholder="Select your result"
+                options={GoalsOptions}
+                value={awayGoals}
+                onChange={setAwayGoals}
+                placeholder="Select goals"
               />
               <SelectField
                 className=""
                 label="Position"
-                options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
-                placeholder="Select your result"
+                options={PositionOptions}
+                value={awayPosition}
+                onChange={setAwayPosition}
+                placeholder="Select position"
               />
               <SelectField
                 className=""
                 label="Bookings"
-                options={MatchResultOptions}
-                value={generalId}
-                onChange={setMatchResId}
-                placeholder="Select your result"
+                options={BookingsOptions}
+                value={awayBookings}
+                onChange={setAwayBookings}
+                placeholder="Select bookings"
+              />
+              <InputField 
+                label="Count" 
+                type="number" 
+                placeholder="0" 
+                value={awayCount?.toString() || ""}
+                onChange={(e) => setAwayCount(e.target.value ? parseInt(e.target.value) : undefined)}
               />
             </div>
           </div>
@@ -511,11 +675,160 @@ export default function LandingPage() {
         <motion.button
           whileHover={{ scale: 1.05, y: -2 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            if (!isAuthenticated) {
+              toast.info("Authentication Required", {
+                description: "Please log in or sign up to generate tips.",
+              });
+              setSignupOpen(true);
+            } else {
+              // Check if user has enough tokens
+              const tokensNeeded = 5;
+              const currentTokens = user?.tokens ?? 0;
+
+              if (currentTokens < tokensNeeded) {
+                toast.error("Insufficient Tokens", {
+                  description: `You need ${tokensNeeded} tokens to generate tips. You have ${currentTokens} tokens. Please top up.`,
+                });
+                setTokensViewOpen(true);
+                return;
+              }
+
+              // Deduct tokens
+              const result = authService.deductTokens(tokensNeeded);
+              
+              if (result.success) {
+                // Collect filter data
+                const filters: TipFilters = {
+                  general: generalFilter || undefined,
+                  league: leagueFilter || undefined,
+                  home: (homeGoals || homePosition || homeBookings || homeCount !== undefined) ? {
+                    result: homeResult || undefined,
+                    resultCount: homeResultCount,
+                    goals: homeGoals || undefined,
+                    position: homePosition || undefined,
+                    bookings: homeBookings || undefined,
+                    count: homeCount,
+                  } : undefined,
+                  away: (awayGoals || awayPosition || awayBookings || awayCount !== undefined) ? {
+                    result: awayResult || undefined,
+                    resultCount: awayResultCount,
+                    goals: awayGoals || undefined,
+                    position: awayPosition || undefined,
+                    bookings: awayBookings || undefined,
+                    count: awayCount,
+                  } : undefined,
+                  homeH2H: (homeH2HResult || homeH2HCount !== undefined) ? {
+                    result: homeH2HResult || undefined,
+                    count: homeH2HCount,
+                  } : undefined,
+                  awayH2H: (awayH2HResult || awayH2HCount !== undefined) ? {
+                    result: awayH2HResult || undefined,
+                    count: awayH2HCount,
+                  } : undefined,
+                };
+
+                // Generate tip with filters
+                const generatedTip = generateTip(filters);
+
+                // Add notification for successful tip generation
+                notificationService.addNotification({
+                  type: "tip_generation",
+                  title: "Tips Generation Successful",
+                  message: `Generated ${generatedTip.fixtures.length} fixtures! ${result.remainingTokens} tokens remaining.`,
+                });
+
+                toast.success("Tips Generated Successfully", {
+                  description: `Generated ${generatedTip.fixtures.length} fixtures! ${result.remainingTokens} tokens remaining.`,
+                });
+              } else {
+                toast.error("Generation Failed", {
+                  description: result.error || "Could not start generation",
+                });
+              }
+            }
+          }}
           className="mt-3 rounded-full bg-[#f4d03f] px-12 py-2 text-lg font-semibold text-[#3a3947] transition-all duration-300 hover:shadow-[0_10px_30px_rgba(244,208,63,0.3)] sm:w-full sm:px-8 sm:py-2"
         >
           Generate Tips
         </motion.button>
       </section>
+
+      {/* Authentication Dialogs */}
+      <LoginDialog
+        open={loginOpen}
+        onOpenChange={setLoginOpen}
+        onSwitchToSignup={() => {
+          setLoginOpen(false);
+          setSignupOpen(true);
+        }}
+      />
+      <SignupDialog
+        open={signupOpen}
+        onOpenChange={setSignupOpen}
+        onSwitchToLogin={() => {
+          setSignupOpen(false);
+          setLoginOpen(true);
+        }}
+      />
+      
+      {/* Token Management Dialogs */}
+      <TokensView
+        open={tokensViewOpen}
+        onOpenChange={setTokensViewOpen}
+        onTopUp={() => {
+          setTokensViewOpen(false);
+          setTopUpOpen(true);
+        }}
+      />
+      <TopUpView
+        open={topUpOpen}
+        onOpenChange={setTopUpOpen}
+      />
+      
+      {/* Notifications View */}
+      {isAuthenticated && (
+        <NotificationsView
+          open={notificationsOpen}
+          onOpenChange={setNotificationsOpen}
+        />
+      )}
+      
+      {/* Generated Tips Views */}
+      {isAuthenticated && (
+        <>
+          <TipsterFixturesView
+            open={tipsterFixturesOpen}
+            onOpenChange={setTipsterFixturesOpen}
+            tipId={tipsterSelectedTipId}
+          />
+          <TipsterReviewView
+            open={tipsterViewOpen}
+            onOpenChange={setTipsterViewOpen}
+            onSelectTip={(tipId) => {
+              setTipsterSelectedTipId(tipId);
+              // fixtures view opens separately
+              setTimeout(() => {
+                // slight delay to allow closing animation
+                setTipsterFixturesOpen(true);
+              }, 50);
+            }}
+          />
+          <GeneratedTipsView
+            open={generatedTipsOpen}
+            onOpenChange={setGeneratedTipsOpen}
+            onTipClick={(tip) => {
+              setSelectedTip(tip);
+              setTipDetailOpen(true);
+            }}
+          />
+          <TipDetailView
+            tip={selectedTip}
+            open={tipDetailOpen}
+            onOpenChange={setTipDetailOpen}
+          />
+        </>
+      )}
     </div>
   );
 }
