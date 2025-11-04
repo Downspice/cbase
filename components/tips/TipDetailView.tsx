@@ -230,7 +230,13 @@ function FixtureCard({ fixture, index }: { fixture: Fixture; index: number }) {
 
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 mb-3">
         <div className="flex flex-col items-center gap-1">
-          <div className="text-4xl leading-none">{fixture.homeTeam.logo || "🏆"}</div>
+          <div className="leading-none">
+            {fixture.homeTeam.logo && fixture.homeTeam.logo.startsWith("http") ? (
+              <img src={fixture.homeTeam.logo} alt={fixture.homeTeam.name} className="h-10 w-10 object-contain" />
+            ) : (
+              <div className="text-4xl">{fixture.homeTeam.logo || "🏆"}</div>
+            )}
+          </div>
           <div className="text-sm font-semibold text-[#3a3947] text-center max-w-[140px] truncate">
             {fixture.homeTeam.name}
           </div>
@@ -242,7 +248,13 @@ function FixtureCard({ fixture, index }: { fixture: Fixture; index: number }) {
           <div className="mt-1 text-xs text-[#6b6a7a]">vs</div>
         </div>
         <div className="flex flex-col items-center gap-1">
-          <div className="text-4xl leading-none">{fixture.awayTeam.logo || "🏆"}</div>
+          <div className="leading-none">
+            {fixture.awayTeam.logo && fixture.awayTeam.logo.startsWith("http") ? (
+              <img src={fixture.awayTeam.logo} alt={fixture.awayTeam.name} className="h-10 w-10 object-contain" />
+            ) : (
+              <div className="text-4xl">{fixture.awayTeam.logo || "🏆"}</div>
+            )}
+          </div>
           <div className="text-sm font-semibold text-[#3a3947] text-center max-w-[140px] truncate">
             {fixture.awayTeam.name}
           </div>

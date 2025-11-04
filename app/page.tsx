@@ -32,6 +32,16 @@ import { authService } from "@/lib/auth";
 import { notificationService } from "@/lib/notifications";
 import { GeneratedTip, TipFilters } from "@/lib/tips";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function LandingPage() {
   const [displayText, setDisplayText] = useState("");
@@ -60,6 +70,7 @@ export default function LandingPage() {
   const [tipsterAutoOpened, setTipsterAutoOpened] = useState(false);
   const [tipsterSelectedTipId, setTipsterSelectedTipId] = useState<string | null>(null);
   const [tipsterFixturesOpen, setTipsterFixturesOpen] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   // Auto-open Tipster Workbench once upon tipster login
   useEffect(() => {
@@ -208,10 +219,7 @@ export default function LandingPage() {
                   <motion.button
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      logout();
-                      toast.success("Logged out successfully");
-                    }}
+                    onClick={() => setLogoutConfirmOpen(true)}
                     className="rounded-xl border-2 border-[#4a4856] bg-transparent px-7 py-2 font-semibold text-[#3a3947] transition-all duration-300 hover:bg-[#4a4856] hover:text-[#fefdfb]"
                   >
                     {user?.name || user?.email} (Logout)
@@ -781,6 +789,32 @@ export default function LandingPage() {
           setTopUpOpen(true);
         }}
       />
+      {/* Logout Confirmation */}
+      <AlertDialog open={logoutConfirmOpen} onOpenChange={setLogoutConfirmOpen}>
+        <AlertDialogContent className="bg-[#fefdfb] border-[#dddad0]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[#3a3947]">Confirm Logout</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#6b6a7a]">
+              Are you sure you want to log out?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white border border-[#dddad0] text-[#3a3947] hover:bg-[#dddad0]">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-[#f4d03f] text-[#3a3947] hover:shadow-sm"
+              onClick={() => {
+                setLogoutConfirmOpen(false);
+                logout();
+                toast.success("Logged out successfully");
+              }}
+            >
+              Log out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <TopUpView
         open={topUpOpen}
         onOpenChange={setTopUpOpen}

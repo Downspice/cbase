@@ -64,23 +64,23 @@ export interface GeneratedTip {
 
 const TIPS_KEY = "tbase_generated_tips";
 
-// Mock team data with logos (using emoji as placeholders - in real app would be image URLs)
+// Mock team data with actual logo image URLs where possible (public sources)
 const TEAM_LOGOS: Record<string, string> = {
-  "Man Utd": "🔴",
-  "Man City": "💙",
-  "Chelsea": "🔵",
-  "Arsenal": "🔴",
-  "Liverpool": "🔴",
-  "Tottenham": "⚪",
-  "Barcelona": "🔵",
-  "Real Madrid": "⚪",
-  "PSG": "🔵",
-  "Bayern Munich": "🔴",
-  "Juventus": "⚫",
-  "AC Milan": "🔴",
-  "Inter Milan": "🔵",
-  "Atletico Madrid": "🔴",
-  "Borussia Dortmund": "🟡",
+  "Man Utd": "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg",
+  "Man City": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg",
+  "Chelsea": "https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg",
+  "Arsenal": "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
+  "Liverpool": "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg",
+  "Tottenham": "https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg",
+  "Barcelona": "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
+  "Real Madrid": "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg",
+  "PSG": "https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg",
+  "Bayern Munich": "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg",
+  "Juventus": "https://upload.wikimedia.org/wikipedia/commons/1/15/Juventus_FC_2017_logo.svg",
+  "AC Milan": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg",
+  "Inter Milan": "https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2014.svg",
+  "Atletico Madrid": "https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg",
+  "Borussia Dortmund": "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg",
 };
 
 const TEAM_NAMES = Object.keys(TEAM_LOGOS);

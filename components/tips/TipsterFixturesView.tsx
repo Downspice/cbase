@@ -85,12 +85,24 @@ export default function TipsterFixturesView({ open, onOpenChange, tipId }: Tipst
                   </div>
                   <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 mb-3">
                     <div className="flex flex-col items-center gap-1">
-                      <div className="text-4xl leading-none">{fx.homeTeam.logo || "🏆"}</div>
+                      <div className="leading-none">
+                        {fx.homeTeam.logo && fx.homeTeam.logo.startsWith("http") ? (
+                          <img src={fx.homeTeam.logo} alt={fx.homeTeam.name} className="h-10 w-10 object-contain" />
+                        ) : (
+                          <div className="text-4xl">{fx.homeTeam.logo || "🏆"}</div>
+                        )}
+                      </div>
                       <div className="text-sm font-semibold text-[#3a3947] text-center max-w-[140px] truncate">{fx.homeTeam.name}</div>
                     </div>
                     <div className="text-center text-xs text-[#6b6a7a]">vs</div>
                     <div className="flex flex-col items-center gap-1">
-                      <div className="text-4xl leading-none">{fx.awayTeam.logo || "🏆"}</div>
+                      <div className="leading-none">
+                        {fx.awayTeam.logo && fx.awayTeam.logo.startsWith("http") ? (
+                          <img src={fx.awayTeam.logo} alt={fx.awayTeam.name} className="h-10 w-10 object-contain" />
+                        ) : (
+                          <div className="text-4xl">{fx.awayTeam.logo || "🏆"}</div>
+                        )}
+                      </div>
                       <div className="text-sm font-semibold text-[#3a3947] text-center max-w-[140px] truncate">{fx.awayTeam.name}</div>
                     </div>
                   </div>
